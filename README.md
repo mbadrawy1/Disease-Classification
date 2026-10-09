@@ -30,7 +30,7 @@ A deep learning project for chicken disease classification using Convolutional N
 
 ### Prerequisites
 
-* Python 3.8
+* Python 3.11
 * Git
 * Conda (optional)
 * Docker
@@ -46,7 +46,7 @@ cd Disease-Classification
 ### Step 2: Create and Activate a Conda Environment
 
 ```bash
-conda create -n cnncls python=3.8 -y
+conda create -n cnncls python=3.11 -y
 conda activate cnncls
 ```
 

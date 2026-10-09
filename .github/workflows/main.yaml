@@ -93,6 +93,28 @@ jobs:
         run: |
           docker run -d -p 8080:8080 --name=cnncls -e 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -e 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -e 'AWS_REGION=${{ secrets.AWS_REGION }}' ${{ secrets.AWS_ECR_LOGIN_URI }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
 
+      - name: Verify application is serving
+        run: |
+          for attempt in {1..12}; do
+            status="$(docker inspect --format='{{.State.Status}}' cnncls)"
+            if [ "$status" != "running" ]; then
+              echo "Container stopped with status: $status"
+              docker logs cnncls
+              exit 1
+            fi
+
+            if curl --fail --silent http://127.0.0.1:8080/ >/dev/null; then
+              echo "Application is responding on port 8080"
+              exit 0
+            fi
+
+            sleep 5
+          done
+
+          echo "Application did not respond on port 8080"
+          docker logs cnncls
+          exit 1
+
       - name: Clean previous images and containers
         run: |
           docker system prune -f
